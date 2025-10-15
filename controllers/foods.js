@@ -25,4 +25,22 @@ router.get('/new', (req, res) => {
     res.render('foods/new.ejs');
 });
 
+router.post('/', async (req, res) => {
+    try {
+        const user = await User.findById(req.params.userId);
+
+        if (!user) {
+            return res.redirect('/');
+        }
+
+        user.pantry.push(req.body);
+        await user.save();
+        
+        res.redirect(`/users/${user._id}/foods`);
+    } catch (err) {
+        console.log('Error creating food item:', err);
+        res.redirect('/');
+    }
+});
+
 module.exports = router;
