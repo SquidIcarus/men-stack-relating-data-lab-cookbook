@@ -43,4 +43,22 @@ router.post('/', async (req, res) => {
     }
 });
 
+router.delete('/:itemId', async (req, res) => {
+    try {
+        const user = await User.findById(req.params.userId);
+        
+        if (!user) {
+            return res.redirect('/');
+        }
+
+        user.pantry.id(req.params.itemId).deleteOne();
+        await user.save();
+
+        res.redirect(`/users/${user._id}/foods`);
+    } catch (err) {
+        console.log('Error deleting food item:', err);
+        res.redirect('/');
+    }
+});
+
 module.exports = router;
