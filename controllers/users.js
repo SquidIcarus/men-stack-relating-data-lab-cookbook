@@ -14,4 +14,19 @@ router.get('/', async (req, res) => {
     }
 });
 
+router.get('/:userId', async (req, res) => {
+    try {
+        const user = await User.findById(req.params.userId);
+        if (!user) {
+            return res.redirect('/users');
+        }
+        res.render('users/show.ejs', {
+            viewedUser: user,
+        });
+    } catch (err) {
+        console.log('Error loading user profile:', err);
+        res.redirect('/users');
+    }
+});
+
 module.exports = router;
