@@ -61,4 +61,51 @@ router.delete('/:itemId', async (req, res) => {
     }
 });
 
+router.get('/:itemId/edit', async (req, res) => {
+    try {
+        const user = await User.findById(req.params.userId);
+
+        if (!user) {
+            return res.redirect('/');
+        }
+        
+        const food = user.pantry.id(req.params.itemId);
+
+        if (!food) {
+            return res.redirect(`/users/${user._id}/foods`);
+        }
+
+        res.render('foods/edit.ejs', {
+            food: food
+        });
+    } catch (err) {
+        console.log('Error loading edit page:', err);
+        res.redirect('/');
+    }
+});
+
+router.put('/:itemId', async (req, res) => {
+    try {
+        const user = await User.findById(req.params.userId);
+
+        if (!user) {
+            return res.redirect('/');
+        }
+
+        const food = user.pantry.id(req.params.itemId);
+        
+        if (!food) {
+            return res.redirect(`/users/${user._id}/foods`);
+        }   
+
+        food.set(req.body);
+        await user.save();
+        
+        res.redirect(`/users/${user._id}/foods`);
+    } catch (err) {
+        console.log('Error updating food item:', err);
+        res.redirect('/');
+    }
+});
+
 module.exports = router;
